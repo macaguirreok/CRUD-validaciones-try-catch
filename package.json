@@ -1,0 +1,25 @@
+{
+  "name": "crud-fs-express",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Proyecto backend realizado con Node.js y Express.",
+  "main": "crear.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macaguirreok/CRUD-fs-express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/macaguirreok/CRUD-fs-express/issues"
+  },
+  "homepage": "https://github.com/macaguirreok/CRUD-fs-express#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.22.4"
+  }
+}
