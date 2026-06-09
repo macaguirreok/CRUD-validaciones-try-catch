@@ -3,6 +3,8 @@ import connection from "../database.js";
 
 const filepath = "./alumnos.json"; //ruta del archivo json, donde está ubicado.
 
+
+
 export const getAlumnos = async (req, res) => {
 
     try{
@@ -14,8 +16,10 @@ export const getAlumnos = async (req, res) => {
 
     res.status(200).json(alumnos);
 
+
     //Si algo sale mal, arrojá un error:
     }catch(error){
+
 
     //a) mensaje amigable para el cliente
     console.error(error); //Se usa en vez del console.log , es para mostrar errores por consola.
@@ -28,16 +32,36 @@ export const getAlumnos = async (req, res) => {
     }
 };
 
+
+
+
+
 export const getUnAlumno = async (req, res) => {
-   
+
+    //? AFUERA del try, porque es algo que se hace ANTES de la bd
+
     //Sacamos el id de los parametros
     const idAlumno = req.params.id ;
+
+    //Validación de que idAlumno, efectivamente sea un número
+    if(isNaN(idAlumno)){
+
+        return  res.status(400).json({
+            mensaje: "El id debe ser numérico"
+        });
+    }
+    
+
+    try{
+
 
     const [alumno] = await connection.query(
         "SELECT * FROM alumnos WHERE id = ? ",
         [idAlumno]
     );
 
+    //404 -> El cliente preguntó algo que no existe
+    //Validación si es que el alumno no existe:
     if( alumno.length == 0){
         res.status(404).json({
             mensaje: "No existe el alumno"
@@ -46,7 +70,25 @@ export const getUnAlumno = async (req, res) => {
         res.status(200).json(alumno[0]);
     }
 
+
+    }catch(error){
+
+  
+    //a) mensaje amigable para el cliente
+    console.error(error);
+
+    //b) el servidor muestra el error real
+    res.status(500).json({
+        mensaje: "Error interno del servidor"
+    });
+
+    }
+
 }
+
+
+
+
 
 export const postAlumnos = async (req,res) => {
     
@@ -65,6 +107,10 @@ export const postAlumnos = async (req,res) => {
         alumno: req.body
 });
 }
+
+
+
+
 
 export const deleteAlumno = async (req,res) => {
     
@@ -87,6 +133,10 @@ export const deleteAlumno = async (req,res) => {
     }
 
 };
+
+
+
+
 
 export const updateAlumno = async (req,res) => {
     
