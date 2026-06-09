@@ -50,7 +50,7 @@ export const getUnAlumno = async (req, res) => {
             mensaje: "El id debe ser numérico"
         });
     }
-    
+
 
     try{
 
@@ -62,12 +62,12 @@ export const getUnAlumno = async (req, res) => {
 
     //404 -> El cliente preguntó algo que no existe
     //Validación si es que el alumno no existe:
-    if( alumno.length == 0){
+    if( alumno.length == 0){ //si el array es vacío [ ]
         res.status(404).json({
             mensaje: "No existe el alumno"
         })
     }else{
-        res.status(200).json(alumno[0]);
+        res.status(200).json(alumno[0]); //si llegó al else, el array tiene el alumno
     }
 
 
