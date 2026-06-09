@@ -1,20 +1,32 @@
 
-//import fs from "fs";// Importa el módulo fs de Node.js 
-//..sirve para leer y escribir archivos en el servidor. En mi caso,
-//..para manejar profesores.json como si fuera mi "base de datos".
-
 import connection from "../database.js";
 
 const filepath = "./alumnos.json"; //ruta del archivo json, donde está ubicado.
 
 export const getAlumnos = async (req, res) => {
 
+    try{
+
+    //Intentá realizar la consulta normalmente
     const [alumnos] = await connection.query(
         "SELECT * FROM alumnos" 
     );
 
     res.status(200).json(alumnos);
-}
+
+    //Si algo sale mal, arrojá un error:
+    }catch(error){
+
+    //a) mensaje amigable para el cliente
+    console.error(error); //Se usa en vez del console.log , es para mostrar errores por consola.
+
+    //b) el servidor muestra el error real
+    res.status(500).json({
+        mensaje: "Error interno del servidor "
+    });
+
+    }
+};
 
 export const getUnAlumno = async (req, res) => {
    
