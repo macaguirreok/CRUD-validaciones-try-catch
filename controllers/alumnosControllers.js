@@ -243,7 +243,56 @@ export const updateAlumno = async (req,res) => {
     
     const idAlumno = req.params.id;
 
+    //*Validación de !idAlumno para que no venga vacío, innecesaria, porque
+    //*si se quiere hacer un update solo a /alumnos da error 404
+
+
     const {nombre , edad} = req.body;
+
+    //* Validación id numérico
+    if(isNaN(idAlumno)){
+        return res.status(400).json({
+            mensaje: "El id debe ser numérico"
+        });
+    }
+
+    //* Validación id mayor a cero
+    if(idAlumno < 1){
+        return res.status(400).json({
+            mensaje: "El id debe ser mayor a cero"
+        });
+    }
+
+    //* Validación nombre y edad obligatorios
+    if(!nombre || !edad){
+        return res.status(400).json({
+            mensaje: "Nombre y edad no pueden estar vacíos"
+        });
+    }
+
+    //* Validación nombre no puede ser numérico
+    if(!isNaN(nombre)){
+        return res.status(400).json({
+            mensaje: "El nombre no puede ser numérico"
+        });
+    }
+
+    //* Validación edad debe ser numérica
+    if(isNaN(edad)){
+        return res.status(400).json({
+            mensaje: "La edad debe ser numérica"
+        });
+    }
+
+    //* Validación de negocio
+    if(edad < 1 || edad > 150){
+        return res.status(400).json({
+            mensaje: "La edad debe estar entre 1 y 150"
+        });
+    }
+
+
+    try{
 
     const [resultado] = await connection.query(
         "UPDATE alumnos SET nombre = ?, edad = ? WHERE id = ?",
@@ -260,6 +309,17 @@ export const updateAlumno = async (req,res) => {
         res.status(200).json({
             mensaje: "Alumno modificado exitosamente"
         });
+
+    }catch(error){
+
+        //*Mensaje para el desarrollador
+        console.error(error);
+
+        //*Mensaje amigable para el cliente
+        res.status(500).json({
+            mensaje: "Error interno del servidor"
+        });
+    }
     
 
 }
