@@ -43,7 +43,7 @@ export const getUnAlumno = async (req, res) => {
     //Sacamos el id de los parametros
     const idAlumno = req.params.id ;
 
-    //Validación de que idAlumno, efectivamente sea un número
+    //*Validación de que idAlumno, efectivamente sea un número
     if(isNaN(idAlumno)){
 
         return  res.status(400).json({
@@ -91,11 +91,50 @@ export const getUnAlumno = async (req, res) => {
 
 
 export const postAlumnos = async (req,res) => {
+
+   
     
     const {nombre, edad} = req.body; //sacamos nombre y edad del req.body
     //en vez de armar un json con los datos, los enviamos a la bd
     //mediante una consulta sql, mediante la connection importada de
     //el archivo databas.js
+
+    //*validación nombre y edad, no pueden venir vacíos:
+    if(!nombre || !edad){
+        
+        return res.status(400).json({
+            mensaje: "Edad y nombre, no pueden estar vacíos"
+        });
+    }
+
+    //*Validación nombre no puede ser numérico
+
+    if(!isNaN(nombre)){
+       return res.status(400).json({
+            mensaje: "Nombre no puede ser numérico"
+        })
+    }
+
+    //*Validación edad solo puede ser numérica
+
+    if(isNaN(edad)){
+
+        return res.status(400).json({
+            mensaje: "La edad debe ser numérica"
+        });
+    }
+
+    //*Validación edad no puede ser "cero", número negativo, o mayor a 150
+    //*Tipo de validación: de negocio. Lo que se permite en la app según se necesite
+    if(edad < 1 || edad > 150){
+
+       return res.status(400).json({
+            mensaje: "Edad no puede ser cero, menor a cero, o mayor a 150"
+        })
+    }
+
+
+    try{
 
     await connection.query(
         "INSERT INTO alumnos(nombre,edad) VALUES (?,?)",
@@ -106,6 +145,20 @@ export const postAlumnos = async (req,res) => {
         mensaje:"alumno creado",
         alumno: req.body
 });
+
+        }catch(error){
+
+       //*Mensaje para el desarrollador
+       console.error(error);
+
+           
+        //* Mensaje amigable para el cliente:
+         res.status(500).json({
+        mensaje: "Error interno del servidor"
+        });
+
+        
+        }
 }
 
 
