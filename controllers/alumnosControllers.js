@@ -244,7 +244,7 @@ export const updateAlumno = async (req,res) => {
     const idAlumno = req.params.id;
 
     //*Validación de !idAlumno para que no venga vacío, innecesaria, porque
-    //*si se quiere hacer un update solo a /alumnos da error 404
+    //*si se quiere hacer un update solo a /alumnos , express devuelve un error 404
 
 
     const {nombre , edad} = req.body;
