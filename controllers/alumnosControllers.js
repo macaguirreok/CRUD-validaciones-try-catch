@@ -1,9 +1,6 @@
 
 import connection from "../database.js";
 
-const filepath = "./alumnos.json"; //ruta del archivo json, donde está ubicado.
-
-
 
 export const getAlumnos = async (req, res) => {
 
@@ -51,6 +48,16 @@ export const getUnAlumno = async (req, res) => {
         });
     }
 
+    //*Validación el id debe ser mayor a cero
+    if(idAlumno < 1){
+        return res.status(400).json({
+            mensaje: "El id debe ser mayor a cero"
+        })
+    }
+
+    //*No hace falta la validación de que no puede venir vacío,
+    //*porque eso significaría que se está haciendo un getAll, si es que no tiene id
+
 
     try{
 
@@ -63,12 +70,13 @@ export const getUnAlumno = async (req, res) => {
     //404 -> El cliente preguntó algo que no existe
     //Validación si es que el alumno no existe:
     if( alumno.length == 0){ //si el array es vacío [ ]
-        res.status(404).json({
+        return res.status(404).json({
             mensaje: "No existe el alumno"
         })
-    }else{
-        res.status(200).json(alumno[0]); //si llegó al else, el array tiene el alumno
     }
+       
+    res.status(200).json(alumno[0]); //si llegó al else, el array tiene el alumno
+    
 
 
     }catch(error){
@@ -169,6 +177,33 @@ export const deleteAlumno = async (req,res) => {
     
     const idAlumno = req.params.id ;
 
+    //*Validación id no puede venir vacío, SOBRA
+    //*porque si se hace un delete a /alumnos, sin id, da directamente un error 404
+    /*
+    if(!idAlumno){
+        return res.status(400).json({
+            mensaje: "El id no puede venir vacío"
+        });
+    }   */
+
+    //*Validación el id tiene que ser numérico
+
+    if(isNaN(idAlumno)){
+    return res.status(400).json({
+        mensaje: "El id debe ser numérico"
+    });
+    }
+
+    //*Validación el id debe ser mayor a cero
+    if(idAlumno < 1){
+       return res.status(400).json({
+            mensaje: "El id debe ser mayor a cero"
+        })
+    }
+
+
+    try{
+
     const [resultado] = await connection.query(
         "DELETE FROM alumnos WHERE id = ?",
         [idAlumno]
@@ -176,12 +211,25 @@ export const deleteAlumno = async (req,res) => {
 
     //Acá es si no encontró a ningun alumno para borrar:
     if (resultado.affectedRows == 0){
-        res.status(404).json({
+        return res.status(404).json({
             mensaje: "Alumno no encontrado"
         })
-    }else{
-        res.status(200).json({
-            mensaje:"Alumno eliminado correctamente"
+    }
+
+
+    res.status(200).json({
+       mensaje:"Alumno eliminado correctamente"
+    });
+    
+
+    }catch(error){
+
+        //*Mensaje para el desarrollador
+        console.error(error);
+        
+        //*Mensaje amigable para el cliente
+        res.status(500).json({
+            mensaje: "Error interno del servidor"
         });
     }
 
@@ -203,15 +251,15 @@ export const updateAlumno = async (req,res) => {
     );
 
     if(resultado.affectedRows === 0){
-        res.status(404).json({
+        return res.status(404).json({
             mensaje: "Alumno no encontrado"
         });
 
-    }else{
+    }
 
         res.status(200).json({
             mensaje: "Alumno modificado exitosamente"
         });
-    }
+    
 
 }
